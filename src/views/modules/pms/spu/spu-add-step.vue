@@ -4,8 +4,7 @@
     <el-steps :active="spuStep" finish-status="success" simple>
       <el-step title="录入spu基本信息" icon="el-icon-info"></el-step>
       <el-step title="录入spu属性信息" icon="el-icon-edit"></el-step>
-      <el-step title="录入sku销售信息" icon="el-icon-edit"></el-step>
-      <el-step title="录入spu优惠信息" icon="el-icon-share"></el-step>
+      <el-step title="录入sku相关信息" icon="el-icon-share"></el-step>
     </el-steps>
     <div v-if="spuStep==0" style="width:450px;margin-left:30%;padding:20px">
       <!-- -->
@@ -32,7 +31,8 @@
             :inactive-value="0"
           ></el-switch>
         </el-form-item>
-        <el-form-item label="图片集" prop="images">
+        <el-form-item label="商品介绍图片集" prop="images">
+          <br />
           <!-- <el-input v-model="spuInfo.images"></el-input> -->
           <multi-upload :value="spuInfo.images" @input="emitInput"></multi-upload>
         </el-form-item>
@@ -67,7 +67,7 @@
                 v-for="(attrItem,num) in attr.valueSelect"
                 :key="index+'-'+num+''+i"
                 :label="attrItem"
-              >{{attrItem}}==>{{attr.attrId}}</el-checkbox>
+              >{{attrItem}}</el-checkbox>
               <!-- -->
             </el-checkbox-group>
           </el-form-item>
@@ -101,10 +101,143 @@
           :label="sale.attrName"
           :prop="'attr_'+sale.attrId"
         ></el-table-column>
-        <el-table-column label="价格" v-if="saleDataTable.length>0" prop="price"></el-table-column>
-        <el-table-column label="库存" v-if="saleDataTable.length>0" prop="stock"></el-table-column>
-        <el-table-column label="操作" v-if="saleDataTable.length>0">
-          <!-- prop=images -->
+        <el-table-column label="价格" v-if="saleDataTable.length>0" prop="price">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.price" placeholder="价格"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="设置详情" v-if="saleDataTable.length>0" type="expand">
+          <template slot-scope="scope">
+            <!-- 设置基本信息 -->
+            <el-card class="box-card" shadow="hover">
+              <div slot="header" class="clearfix">
+                <span>sku基本信息</span>
+              </div>
+              <el-form label-position="left" class="demo-table-expand">
+                <el-form-item>
+                  <el-input v-model="scope.row.skuName">
+                    <template slot="prepend">名字</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.skuDesc">
+                    <template slot="prepend">描述</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.skuTitle">
+                    <template slot="prepend">标题</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.skuSubtitle">
+                    <template slot="prepend">副标题</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.weight">
+                    <template slot="prepend">重量</template>
+                  </el-input>
+                </el-form-item>
+              </el-form>
+            </el-card>
+            <!-- 设置积分 -->
+            <el-card class="box-card" shadow="hover">
+              <div slot="header" class="clearfix">
+                <span>设置积分</span>
+              </div>
+              <el-form label-position="left" class="demo-table-expand">
+                <el-form-item>
+                  <el-input v-model="scope.row.growBounds" placeholder="成长积分">
+                    <template slot="prepend">赠送</template>
+                    <template slot="append">成长积分</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.buyBounds" placeholder="购物积分">
+                    <template slot="prepend">赠送</template>
+                    <template slot="append">购物积分</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label="生效情况">
+                  <br />
+                  <el-form-item label="无优惠，成长积分是否生效">
+                    <el-switch v-model="scope.row.work[0]" :active-value="1" :inactive-value="0"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="无优惠，购物积分是否生效">
+                    <el-switch v-model="scope.row.work[1]" :active-value="1" :inactive-value="0"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="有优惠，成长积分是否生效">
+                    <el-switch v-model="scope.row.work[2]" :active-value="1" :inactive-value="0"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="有优惠，购物积分是否生效">
+                    <el-switch v-model="scope.row.work[3]" :active-value="1" :inactive-value="0"></el-switch>
+                  </el-form-item>
+                </el-form-item>
+              </el-form>
+            </el-card>
+
+            <!-- 设置打折 -->
+            <el-card class="box-card" shadow="hover">
+              <div slot="header" class="clearfix">
+                <span>设置打折</span>
+              </div>
+              <el-form label-position="left" class="demo-table-expand">
+                <el-form-item>
+                  <el-input v-model="scope.row.fullCount">
+                    <template slot="prepend">满</template>
+                    <template slot="append">件</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.discount">
+                    <template slot="prepend">打</template>
+                    <template slot="append">% 折</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label="可否与其他优惠叠加">
+                  <el-switch
+                    v-model="scope.row.ladderAddOther"
+                    :active-value="1"
+                    :inactive-value="0"
+                  ></el-switch>
+                </el-form-item>
+              </el-form>
+            </el-card>
+
+            <!-- 设置满减 -->
+            <el-card class="box-card" shadow="hover">
+              <div slot="header" class="clearfix">
+                <span>设置满减</span>
+              </div>
+              <el-form label-position="left" class="demo-table-expand">
+                <el-form-item>
+                  <el-input v-model="scope.row.fullPrice" placeholder>
+                    <template slot="prepend">满</template>
+                    <template slot="append">元</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="scope.row.reducePrice">
+                    <template slot="prepend">减</template>
+                    <template slot="append">元</template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label="可否与其他优惠叠加">
+                  <el-switch v-model="scope.row.fullAddOther" :active-value="1" :inactive-value="0"></el-switch>
+                </el-form-item>
+              </el-form>
+            </el-card>
+
+            <!-- 上传图片 -->
+            <el-card class="box-card" shadow="hover">
+              <div slot="header" class="clearfix">
+                <span>上传图片</span>
+                <!-- vue，想要回调的时候额外用到自己的数据，和人家原生默认的，只需要 $event就能引用到 -->
+                <multi-upload :value="scope.row.images" @input="skuUploadImage(scope.row,$event)"></multi-upload>
+              </div>
+            </el-card>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -207,7 +340,6 @@ export default {
     },
     // 选中结果排列组合 生成的最终table值saleDataTable
     setTableData(saleList) {
-     
       this.saleDataTable = [];
       this.tableFinalData = [];
       for (var i = 0; i < saleList.length; i++) {
@@ -220,11 +352,11 @@ export default {
       var attrId = [];
       for (var i = 0; i < this.saleDataTable.length; i++) {
         decar.push(this.saleDataTable[i].valueSelect);
-        attrId.push(this.saleDataTable[i].attrId)
+        attrId.push(this.saleDataTable[i].attrId);
       }
       //遍历进行交叉想成
       var decarResult = this.calcDescartes(decar);
-      console.log(decar,attrId,"计算后的",this.calcDescartes(decar));
+      console.log(decar, attrId, "计算后的", this.calcDescartes(decar));
       //封装计算后的笛卡尔积和其他结果
       /**
        * [
@@ -234,17 +366,32 @@ export default {
        * 3: (3) ["6g", "白色", "256"]
        * ]
        */
-      for(var i=0;i<decarResult.length;i++){
+      for (var i = 0; i < decarResult.length; i++) {
         var tableItem = {};
-        for(var j = 0;j<decarResult[i].length;j++){
-            tableItem["attr_"+attrId[j]] = decarResult[i][j];
-            tableItem.price = 0;
-            tableItem.stock = 0;
+        for (var j = 0; j < decarResult[i].length; j++) {
+          tableItem["attr_" + attrId[j]] = decarResult[i][j];
+          tableItem.price = 0;
+          tableItem.stock = 0;
+          tableItem.growBounds = tableItem.price;
+          tableItem.buyBounds = tableItem.price;
+          tableItem.work = [0, 0, 0, 0];
+          tableItem.fullCount = 1;
+          tableItem.discount = 0;
+          tableItem.fullPrice = 0;
+          tableItem.reducePrice = 0;
+          tableItem.fullAddOther = 0;
+          tableItem.images = [];
+
+          //skuName
+          tableItem.skuName = this.spuInfo.spuName + " " + decarResult[i];
+          tableItem.skuDesc = "";
+          tableItem.skuTitle = this.spuInfo.spuName + " " + decarResult[i];
+          tableItem.skuSubtitle = this.spuInfo.spuName + " " + decarResult[i];
+          tableItem.weight = 0;
         }
         this.tableFinalData.push(tableItem);
       }
-      console.log("准备好的数据...",this.tableFinalData);
-
+      console.log("准备好的数据...", this.tableFinalData);
     },
     getAttrGroups() {
       console.log("三级分类，", this.spuInfo.catalogId);
@@ -325,9 +472,10 @@ export default {
       console.log("上传的文件", list);
       this.spuInfo.images = list;
     },
+    skuUploadImage(row, list) {
+      row.images = list;
+    },
     next() {
-      console.log("下一页...");
-
       if (this.spuStep == 0) {
         //第一步，验证表单
         this.$refs.spuInfoform.validate(valid => {
@@ -337,11 +485,13 @@ export default {
             //查询出当前分类的所有属性分组
             this.getAttrGroups();
           } else {
+            return false;
           }
         });
       }
 
       if (this.spuStep == 1) {
+        this.btnText = "确认保存";
         //第二步，需要按照第一步选择的分类id，查询当前分类下的属性和属性组，如果没有则维护属性组
         if (this.spuInfo.catalogId) {
           //获取三级分类中的所有属性组
@@ -351,15 +501,89 @@ export default {
       }
 
       if (this.spuStep == 2) {
-        if (this.spuInfo.catalogId) {
-          //获取三级分类中的所有属性组
+        var data = this.getPostData();
+        if (data == null) {
+          this.$alert("数据不完整，请正确录入相关信息", "警告");
         }
-      }
+        const loading = this.$loading({
+          lock: true,
+          text: "数据量较大，正在拼命保存中...",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
 
-      if (this.spuStep == 3) {
+        this.$http({
+          url: this.$http.adornApiUrl("/pms/spuinfo/save"),
+          method: "post",
+          data: this.$http.adornData(data, false)
+        })
+          .then(({ data }) => {
+            this.$message("保存成功，" + data.msg);
+            loading.close();
+            //路由跳转到指定位置
+            this.$router.push({
+              path: `/pms-spu/list`, // 只是把query改了，其他都没变
+              query: {
+                catId: this.catId
+              }
+            });
+          })
+          .catch(err => {
+            this.$message("网络故障，出现错误。" + err);
+            loading.close();
+          });
+
+        //
+        return true;
       }
 
       this.spuStep++;
+    },
+    getPostData() {
+      //获取需要提交保存的整个商品信息
+      var data = {};
+      data.spuName = this.spuInfo.spuName;
+      data.brandId = this.spuInfo.brandId;
+      data.catalogId = this.spuInfo.catalogId;
+      data.publishStatus = this.spuInfo.publishStatus;
+      data.spuDescription = this.spuInfo.spuDescription;
+      data.spuImages = this.spuInfo.images;
+      data.baseAttrs = [];
+      //整理返回基本属性组合 this.finalValues
+      if (this.finalValues.length <= 0) {
+        return null;
+      }
+      for (var i = 0; i < this.finalValues.length; i++) {
+        if (this.finalValues[i].length > 0) {
+          for (var j = 0; j < this.finalValues[i].length; j++) {
+            data.baseAttrs.push(this.finalValues[i][j]);
+          }
+        }
+      }
+
+      data.skus = [];
+      //整理返回所有sku信息  this.tableFinalData
+      if (this.tableFinalData.length <= 0) {
+        return null;
+      }
+      for (var i = 0; i < this.tableFinalData.length; i++) {
+        var item = this.tableFinalData[i];
+        item.saleAttrs = [];
+        for (var attr in item) {
+          // console.log(i+"->当前遍历的属性是",attr,typeof attr);
+          if (attr.startsWith("attr_")) {
+            //说明当前遍历的是属性id
+            var attrId = attr.split("_")[1];
+            item.saleAttrs.push({
+              attrId: attr.split("_")[1],
+              attrValue: item["" + attr]
+            });
+          }
+        }
+        data.skus.push(item);
+      }
+      console.log("最终的数据是：", data);
+      return data;
     },
 
     prev() {
