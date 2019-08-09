@@ -57,7 +57,7 @@
             :key="index"
             :label="attr.attrName"
           >
-            <el-checkbox-group
+            <el-checkbox-group 
               size="small"
               v-model="finalValues[i][index].valueSelected"
               @change="handleCheckedAttrChange"
@@ -70,6 +70,17 @@
               >{{attrItem}}</el-checkbox>
               <!-- -->
             </el-checkbox-group>
+<!-- 
+            <el-radio-group
+              v-model="finalValues[i][index].valueSelected"
+              v-if="attr.valueType == 0"
+            >
+              <el-radio
+                v-for="(attrItem,num) in attr.valueSelect"
+                :key="index+'-'+num+''+i"
+                :label="attrItem"
+              >{{attrItem}}</el-radio>
+            </el-radio-group> -->
           </el-form-item>
         </el-form-item>
         <el-form-item>
